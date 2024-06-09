@@ -2,12 +2,13 @@ import styled from "styled-components";
 
 const TooltipWrapper = styled.div`
   position: relative;
-  display: inline-block;
+  display: block;
 `;
 
 const TooltipContent = styled.span`
   visibility: hidden;
-  width: 120px;
+  min-width: 120px;
+  max-width: 100%;
   background-color: #333;
   color: #fff;
   text-align: center;

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { Dispatch, SetStateAction, useEffect, useMemo } from "react";
 import {
   useReactTable,
   ColumnDef,
@@ -7,10 +7,14 @@ import {
   getSortedRowModel,
 } from "@tanstack/react-table";
 import { Styled } from "./Table.styled";
-import { useTheme } from '../../theme/ThemeContext'
+import { useTheme } from "../../theme/ThemeContext";
+import { Button } from "../Button";
 
+interface TableData {
+  id: number;
+}
 
-type TableProps<T extends object> = {
+type TableProps<T extends TableData> = {
   columns: ColumnDef<T>[];
   data: T[];
   pagination?: {
@@ -18,20 +22,23 @@ type TableProps<T extends object> = {
     pageCount: number;
     gotoPage: (value: number) => void;
   };
+  setSelectedRowKeys?: Dispatch<SetStateAction<number[]>>;
 };
 
-export const Table = <T extends object>({
+export const Table = <T extends TableData>({
   columns,
   data,
   pagination,
+  setSelectedRowKeys,
 }: TableProps<T>) => {
-  const { currentTheme} = useTheme();
+  const { currentTheme } = useTheme();
 
   const defaultColumns: ColumnDef<T, any>[] = [
     {
       id: "select",
+      size: 10,
       header: ({ table }) => (
-        <input
+        <Styled.Checkbox
           type="checkbox"
           {...{
             checked: table.getIsAllRowsSelected(),
@@ -41,7 +48,7 @@ export const Table = <T extends object>({
         />
       ),
       cell: ({ row }) => (
-        <input
+        <Styled.Checkbox
           type="checkbox"
           {...{
             checked: row.getIsSelected(),
@@ -51,7 +58,7 @@ export const Table = <T extends object>({
       ),
     },
     ...columns,
-  ];
+];
 
   const table = useReactTable<T>({
     data,
@@ -60,74 +67,94 @@ export const Table = <T extends object>({
     getSortedRowModel: getSortedRowModel(),
   });
 
+  useEffect(() => {
+    if (setSelectedRowKeys) {
+      const selectedIds: number[] = table
+        .getSelectedRowModel()
+        .rows.map((row) => row.original.id);
+      setSelectedRowKeys(selectedIds);
+    }
+  }, [table.getSelectedRowModel().rows, setSelectedRowKeys]);
+
+  useEffect(() => {
+    table.resetRowSelection();
+  }, [data]);
+
   const paginationComponent = useMemo(() => {
-    if(!pagination) return null;
-    const {pageIndex, pageCount, gotoPage} = pagination;
+    if (!pagination) return null;
+    const { pageIndex, pageCount, gotoPage } = pagination;
     return (
       <Styled.Pagination>
-        <button
+        <Button
           onClick={() => gotoPage(pageIndex - 1)}
           disabled={pageIndex === 1}
         >
           Previous
-        </button>
+        </Button>
         <span>
-            Page <strong>{pageIndex}</strong> of {pageCount}
-          </span>
-        <button
+          Page <strong>{pageIndex}</strong> of {pageCount}
+        </span>
+        <Button
           onClick={() => gotoPage(pageIndex + 1)}
           disabled={pageIndex === pageCount}
         >
           Next
-        </button>
+        </Button>
       </Styled.Pagination>
-    )
-  }, [pagination])
+    );
+  }, [pagination]);
 
   return (
     <Styled.TableWrapper>
       <Styled.Table theme={currentTheme}>
         <thead>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
-              <th key={header.id}>
-                {header.isPlaceholder ? null : (
-                  <div
-                    {...{
-                      onClick: header.column.getToggleSortingHandler(),
-                      style: {
-                        cursor: header.column.getCanSort()
-                          ? 'pointer'
-                          : 'auto',
-                      },
-                    }}
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                console.log(header.column.getSize())
+                return (
+                    <th
+                        style={{width: header.column.getSize() + "%"}}
+                        key={header.id}
                     >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
+                      {header.isPlaceholder ? null : (
+                          <div
+                              {...{
+                                onClick: header.column.getToggleSortingHandler(),
+                                style: {
+                                  cursor: header.column.getCanSort()
+                                      ? "pointer"
+                                      : "auto",
+                                },
+                              }}
+                          >
+                            {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                            )}
+                            {{
+                              asc: " 🔼",
+                              desc: " 🔽",
+                            }[header.column.getIsSorted() as string] ?? null}
+                          </div>
                       )}
-                      {{
-                        asc: " 🔼",
-                        desc: " 🔽",
-                      }[header.column.getIsSorted() as string] ?? null}
-                    </div>
-                  )}
-                </th>
-              ))}
+                    </th>
+                )
+
+              })}
             </tr>
           ))}
         </thead>
         <tbody>
-          {table.getRowModel().rows.map((row) => (
+        {table.getRowModel().rows.map((row) => (
             <tr key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
+                  <td key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
               ))}
             </tr>
-          ))}
+        ))}
         </tbody>
       </Styled.Table>
       {paginationComponent}
