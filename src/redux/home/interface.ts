@@ -9,6 +9,4 @@ export interface HomeState {
   tasks: Task[];
   loading: boolean;
   error: string | null;
-  page: number;
-  totalPages: number;
 }

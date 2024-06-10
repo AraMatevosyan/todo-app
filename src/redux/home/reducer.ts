@@ -6,8 +6,6 @@ const initialState: HomeState = {
   tasks: [],
   loading: false,
   error: null,
-  page: 1,
-  totalPages: 10,
 };
 
 const homeSlice = createSlice({
@@ -21,9 +19,6 @@ const homeSlice = createSlice({
       state.tasks = state.tasks.filter(
         (task) => !action.payload.includes(task.id),
       );
-    },
-    setPage(state, action: PayloadAction<number>) {
-      state.page = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -43,5 +38,5 @@ const homeSlice = createSlice({
   },
 });
 
-export const { addTask, deleteTasks, setPage } = homeSlice.actions;
+export const { addTask, deleteTasks } = homeSlice.actions;
 export default homeSlice.reducer;

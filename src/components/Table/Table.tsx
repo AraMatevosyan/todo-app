@@ -23,6 +23,7 @@ type TableProps<T extends TableData> = {
     gotoPage: (value: number) => void;
   };
   setSelectedRowKeys?: Dispatch<SetStateAction<number[]>>;
+  withCheckbox?: boolean;
 };
 
 export const Table = <T extends TableData>({
@@ -30,35 +31,38 @@ export const Table = <T extends TableData>({
   data,
   pagination,
   setSelectedRowKeys,
+  withCheckbox = false,
 }: TableProps<T>) => {
   const { currentTheme } = useTheme();
 
+  const checkboxColumn: ColumnDef<T, any> = {
+    id: "select",
+    size: 10,
+    header: ({ table }) => (
+      <Styled.Checkbox
+        type="checkbox"
+        {...{
+          checked: table.getIsAllRowsSelected(),
+          indeterminate: table.getIsSomeRowsSelected(),
+          onChange: table.getToggleAllRowsSelectedHandler(),
+        }}
+      />
+    ),
+    cell: ({ row }) => (
+      <Styled.Checkbox
+        type="checkbox"
+        {...{
+          checked: row.getIsSelected(),
+          onChange: row.getToggleSelectedHandler(),
+        }}
+      />
+    ),
+  };
+
   const defaultColumns: ColumnDef<T, any>[] = [
-    {
-      id: "select",
-      size: 10,
-      header: ({ table }) => (
-        <Styled.Checkbox
-          type="checkbox"
-          {...{
-            checked: table.getIsAllRowsSelected(),
-            indeterminate: table.getIsSomeRowsSelected(),
-            onChange: table.getToggleAllRowsSelectedHandler(),
-          }}
-        />
-      ),
-      cell: ({ row }) => (
-        <Styled.Checkbox
-          type="checkbox"
-          {...{
-            checked: row.getIsSelected(),
-            onChange: row.getToggleSelectedHandler(),
-          }}
-        />
-      ),
-    },
+    ...(withCheckbox ? [checkboxColumn] : []),
     ...columns,
-];
+  ];
 
   const table = useReactTable<T>({
     data,
@@ -110,51 +114,30 @@ export const Table = <T extends TableData>({
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                console.log(header.column.getSize())
-                return (
-                    <th
-                        style={{width: header.column.getSize() + "%"}}
-                        key={header.id}
-                    >
-                      {header.isPlaceholder ? null : (
-                          <div
-                              {...{
-                                onClick: header.column.getToggleSortingHandler(),
-                                style: {
-                                  cursor: header.column.getCanSort()
-                                      ? "pointer"
-                                      : "auto",
-                                },
-                              }}
-                          >
-                            {flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                            )}
-                            {{
-                              asc: " 🔼",
-                              desc: " 🔽",
-                            }[header.column.getIsSorted() as string] ?? null}
-                          </div>
-                      )}
-                    </th>
-                )
-
-              })}
+              {headerGroup.headers.map((header) => (
+                <th
+                  style={{ width: header.column.getSize() + "%" }}
+                  key={header.id}
+                >
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext(),
+                    )}
+                </th>
+              ))}
             </tr>
           ))}
         </thead>
         <tbody>
-        {table.getRowModel().rows.map((row) => (
+          {table.getRowModel().rows.map((row) => (
             <tr key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
+                <td key={cell.id}>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
               ))}
             </tr>
-        ))}
+          ))}
         </tbody>
       </Styled.Table>
       {paginationComponent}
