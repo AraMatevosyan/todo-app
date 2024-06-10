@@ -13,7 +13,10 @@ export const Header = () => {
 
   return (
     <Styled.HeaderWrapper theme={currentTheme}>
-      <Styled.Title>My App</Styled.Title>
+      <Styled.LinkWrapper>
+        <Styled.Link to="/">Home</Styled.Link>
+        <Styled.Link to="/users">Users</Styled.Link>
+      </Styled.LinkWrapper>
       <Tooltip text={tooltipText}>
         <Switcher onChange={switchTheme} />
       </Tooltip>

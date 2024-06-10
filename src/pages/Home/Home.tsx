@@ -12,7 +12,7 @@ type DataType = {
   completed: boolean;
 };
 
-export const Home = () => {
+const Home = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [selectedTasksIds, setSelectedTasksIds] = useState<number[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -133,3 +133,5 @@ export const Home = () => {
     </Styled.HomeWrapper>
   );
 };
+
+export default Home;

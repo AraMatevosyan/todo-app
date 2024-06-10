@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import {FetchUsersPayload, UsersState} from "./interface";
+import { FetchUsersPayload, UsersState } from "./interface";
 import { fetchUsers } from "./actions";
 
 const initialState: UsersState = {
@@ -24,7 +24,9 @@ const usersSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-        .addCase(fetchUsers.fulfilled, (state, action: PayloadAction<FetchUsersPayload>) => {
+      .addCase(
+        fetchUsers.fulfilled,
+        (state, action: PayloadAction<FetchUsersPayload>) => {
           state.loading = false;
           state.users = action.payload.users;
           state.totalPages = action.payload.totalPages;

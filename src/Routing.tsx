@@ -1,32 +1,23 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom";
-import { Home, UsersList, UserDetails } from "./pages";
+import React, { lazy, Suspense } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+
+const Home = lazy(() => import("./pages/Home/Home"));
+const UsersList = lazy(() => import("./pages/UsersList/UsersList"));
+const UserDetails = lazy(() => import("./pages/UserDetails/UserDetails"));
 export const HOME_PATH = "/";
 export const USERS_PATH = "/users";
 export const USER_DETAILS_PATH = "/users/:id";
 
-const routes = [
-  {
-    component: Home,
-    path: HOME_PATH,
-  },
-  {
-    component: UsersList,
-    path: USERS_PATH,
-  },
-  {
-    component: UserDetails,
-    path: USER_DETAILS_PATH,
-  },
-];
-
 const Routing = () => {
   return (
-    <Routes>
-      {routes.map((route) => (
-        <Route key={route.path} path={route.path} Component={route.component} />
-      ))}
-    </Routes>
+    <Suspense fallback={<div>Loading...</div>}>
+      <Routes>
+        <Route path={HOME_PATH} element={<Home />} />
+        <Route path={USERS_PATH} element={<UsersList />} />
+        <Route path={USER_DETAILS_PATH} element={<UserDetails />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Suspense>
   );
 };
 

@@ -5,12 +5,12 @@ import { ColumnDef } from "@tanstack/react-table";
 import { AppDispatch, RootState } from "../../redux";
 import { fetchUsers, setPage } from "../../redux/usersList";
 import { User } from "../../redux/usersList/interface";
-import {addUsersToDB} from "../../services/indexedDB";
-import {useSorting} from "../../hooks";
+import { addUsersToDB } from "../../services/indexedDB";
+import { useSorting } from "../../hooks";
 import { Search, Table } from "../../components";
 import { Styled } from "./UsersList.styled";
 
-export const UsersList = () => {
+const UsersList = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [searchQuery, setSearchQuery] = useQueryParam(
     "search",
@@ -24,13 +24,20 @@ export const UsersList = () => {
   );
 
   useEffect(() => {
-    (async() => {
+    (async () => {
       await addUsersToDB();
-    })()
+    })();
   }, []);
 
   useEffect(() => {
-    dispatch(fetchUsers({ page, limit: 10, sort: { field, order }, search_query: searchQuery }));
+    dispatch(
+      fetchUsers({
+        page,
+        limit: 10,
+        sort: { field, order },
+        search_query: searchQuery,
+      }),
+    );
   }, [dispatch, page, field, order, searchQuery]);
 
   const handlePageChange = (newPage: number) => {
@@ -42,9 +49,11 @@ export const UsersList = () => {
       accessorKey: "name",
       size: 40,
       header: () => (
-          <div onClick={() => update("name")} style={{ cursor: 'pointer' }}>
-            Name {field === "name" && (order === "asc" ? "🔼" : order === "desc" ? "🔽" : "")}
-          </div>
+        <div onClick={() => update("name")} style={{ cursor: "pointer" }}>
+          Name{" "}
+          {field === "name" &&
+            (order === "asc" ? "🔼" : order === "desc" ? "🔽" : "")}
+        </div>
       ),
       cell: (info) => {
         return info.getValue();
@@ -54,9 +63,11 @@ export const UsersList = () => {
       accessorKey: "age",
       size: 10,
       header: () => (
-          <div onClick={() => update("age")} style={{ cursor: 'pointer' }}>
-            Age {field === "age" && (order === "asc" ? "🔼" : order === "desc" ? "🔽" : "")}
-          </div>
+        <div onClick={() => update("age")} style={{ cursor: "pointer" }}>
+          Age{" "}
+          {field === "age" &&
+            (order === "asc" ? "🔼" : order === "desc" ? "🔽" : "")}
+        </div>
       ),
       cell: (info) => info.getValue(),
     },
@@ -72,11 +83,7 @@ export const UsersList = () => {
       header: "",
       cell: (info) => {
         const id = info.getValue() || "1";
-        return (
-          <Styled.Link to={`/users/${id}`}>
-            ↗
-          </Styled.Link>
-        );
+        return <Styled.Link to={`/users/${id}`}>↗</Styled.Link>;
       },
     },
   ];
@@ -97,3 +104,5 @@ export const UsersList = () => {
     </Styled.UsersListWrapper>
   );
 };
+
+export default UsersList;

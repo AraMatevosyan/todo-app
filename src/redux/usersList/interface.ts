@@ -23,8 +23,7 @@ export interface FetchUsersParams {
   limit: number;
   sort: {
     field?: keyof User;
-    order?: 'asc' | 'desc';
+    order?: "asc" | "desc";
   };
   search_query: string;
 }
-
