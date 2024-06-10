@@ -14,7 +14,7 @@ const App: React.FC = () => {
         <Styled.Content>
           <Routing />
         </Styled.Content>
-      </ThemeProvider>{" "}
+      </ThemeProvider>
     </QueryParamProvider>
   );
 };
