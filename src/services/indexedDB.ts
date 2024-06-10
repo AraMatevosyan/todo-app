@@ -53,6 +53,13 @@ export async function getUsersFromDB(page: number, limit: number, sort: { field?
     return { users: paginatedUsers, total, totalPages };
 }
 
+export async function getUserFromDB(id: number): Promise<User | null> {
+    const db = await openDB(DATABASE_NAME, DATABASE_VERSION);
+    const tx = db.transaction(STORE_NAME, 'readonly');
+    const store = tx.objectStore(STORE_NAME);
+    return await store.get(id);
+}
+
 export const addUsersToDB = async () => {
     const db = await openDB(DATABASE_NAME, DATABASE_VERSION, {
         upgrade(db) {

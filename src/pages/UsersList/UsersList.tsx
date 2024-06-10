@@ -55,7 +55,6 @@ export const UsersList = () => {
       size: 10,
       header: () => (
           <div onClick={() => update("age")} style={{ cursor: 'pointer' }}>
-            Age
             Age {field === "age" && (order === "asc" ? "🔼" : order === "desc" ? "🔽" : "")}
           </div>
       ),
@@ -74,7 +73,7 @@ export const UsersList = () => {
       cell: (info) => {
         const id = info.getValue() || "1";
         return (
-          <Styled.Link target="_blank" to={id}>
+          <Styled.Link to={`/users/${id}`}>
             ↗
           </Styled.Link>
         );
