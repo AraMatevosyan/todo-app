@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { Home, UsersList, UserDetails } from "./pages";
 export const HOME_PATH = "/";
 export const USERS_PATH = "/users";
@@ -22,17 +22,11 @@ const routes = [
 
 const Routing = () => {
   return (
-    <Router>
-      <Routes>
-        {routes.map((route) => (
-          <Route
-            key={route.path}
-            path={route.path}
-            Component={route.component}
-          />
-        ))}
-      </Routes>
-    </Router>
+    <Routes>
+      {routes.map((route) => (
+        <Route key={route.path} path={route.path} Component={route.component} />
+      ))}
+    </Routes>
   );
 };
 

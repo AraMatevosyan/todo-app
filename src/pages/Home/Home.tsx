@@ -26,13 +26,13 @@ export const Home = () => {
 
   const shouldShowDeleteButton = !!selectedTasksIds.length;
 
-  const { tasks, loading, error, page, totalPages } = useSelector(
+  const { tasks, loading, error } = useSelector(
     (state: RootState) => state.home,
   );
 
   useEffect(() => {
-    dispatch(fetchTasks(page));
-  }, [page]);
+    dispatch(fetchTasks());
+  }, []);
 
   const columns: ColumnDef<DataType>[] = [
     {
@@ -43,9 +43,7 @@ export const Home = () => {
         const text = info.getValue() as string;
         return (
           <Tooltip text={text}>
-            <Styled.Text>
-                {text}
-            </Styled.Text>
+            <Styled.Text>{text}</Styled.Text>
           </Tooltip>
         );
       },
@@ -89,6 +87,7 @@ export const Home = () => {
         </Button>
       </Styled.ActionsPanel>
       <Table
+        withCheckbox
         columns={columns}
         data={tasks}
         setSelectedRowKeys={setSelectedTasksIds}
