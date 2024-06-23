@@ -8,7 +8,7 @@ const TooltipWrapper = styled.div`
 const TooltipContent = styled.span`
   visibility: hidden;
   min-width: 120px;
-  max-width: 100%;
+  max-width: fit-content;
   background-color: #333;
   color: #fff;
   text-align: center;

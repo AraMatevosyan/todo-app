@@ -26,7 +26,7 @@ const Home = () => {
 
   const shouldShowDeleteButton = !!selectedTasksIds.length;
 
-  const { tasks, loading, error } = useSelector(
+  const { tasks } = useSelector(
     (state: RootState) => state.home,
   );
 

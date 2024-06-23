@@ -1,4 +1,6 @@
-import { useState } from "react";
+import {useEffect, useRef, useState} from "react";
+import {StringParam, useQueryParam, withDefault} from "use-query-params";
+import {State} from "./types";
 
 export type SortOrder = "asc" | "desc" | undefined;
 
@@ -24,4 +26,27 @@ export const useSorting = <T extends unknown>() => {
   };
 
   return { field, order, update };
+};
+
+const useDebounce = (value: string, delay: number) => {
+  const [debouncedValue, setDebouncedValue] = useState("");
+  const timerRef = useRef<number>();
+
+  useEffect(() => {
+    timerRef.current = setTimeout(() => setDebouncedValue(value), delay) as any;
+
+    return () => {
+      clearTimeout(timerRef.current);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+};
+
+export const useDebouncedQueryParam = (paramName: string, defaultValue='') => {
+  const [queryParam, setQueryParam] = useQueryParam(paramName, withDefault(StringParam, defaultValue)) as State<string>;
+  const debouncedValue = useDebounce(queryParam, 500);
+
+
+  return [queryParam, debouncedValue, setQueryParam] as const;
 };

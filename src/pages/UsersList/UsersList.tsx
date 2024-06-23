@@ -1,33 +1,21 @@
-import React, { Dispatch, SetStateAction, useEffect } from "react";
-import { StringParam, useQueryParam, withDefault } from "use-query-params";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ColumnDef } from "@tanstack/react-table";
 import { AppDispatch, RootState } from "../../redux";
 import { fetchUsers, setPage } from "../../redux/usersList";
 import { User } from "../../redux/usersList/interface";
-import { addUsersToDB } from "../../services/indexedDB";
-import { useSorting } from "../../hooks";
-import { Search, Table } from "../../components";
+import {useDebouncedQueryParam, useSorting} from "../../hooks";
+import {Search, Table, Tooltip} from "../../components";
 import { Styled } from "./UsersList.styled";
 
 const UsersList = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const [searchQuery, setSearchQuery] = useQueryParam(
-    "search",
-    withDefault(StringParam, ""),
-  ) as [string, Dispatch<SetStateAction<string>>];
-
+  const [searchQuery, debouncedSearchQuery, setSearchQuery] = useDebouncedQueryParam('search');
   const { field, order, update } = useSorting<keyof User>();
 
-  const { users, loading, error, page, totalPages } = useSelector(
+  const { users, page, totalPages } = useSelector(
     (state: RootState) => state.users,
   );
-
-  useEffect(() => {
-    (async () => {
-      await addUsersToDB();
-    })();
-  }, []);
 
   useEffect(() => {
     dispatch(
@@ -35,10 +23,10 @@ const UsersList = () => {
         page,
         limit: 10,
         sort: { field, order },
-        search_query: searchQuery,
+        search_query: debouncedSearchQuery,
       }),
     );
-  }, [dispatch, page, field, order, searchQuery]);
+  }, [dispatch, page, field, order, debouncedSearchQuery]);
 
   const handlePageChange = (newPage: number) => {
     dispatch(setPage(newPage));
@@ -46,25 +34,51 @@ const UsersList = () => {
 
   const columns: ColumnDef<User>[] = [
     {
-      accessorKey: "name",
-      size: 40,
+      accessorKey: "firstName",
+      size: 30,
       header: () => (
-        <div onClick={() => update("name")} style={{ cursor: "pointer" }}>
-          Name{" "}
-          {field === "name" &&
+        <div onClick={() => update("firstName")} style={{ cursor: "pointer" }}>
+          First Name
+          {field === "firstName" &&
             (order === "asc" ? "🔼" : order === "desc" ? "🔽" : "")}
         </div>
       ),
       cell: (info) => {
-        return info.getValue();
+          const text = info.getValue() as string;
+
+          return (
+              <Tooltip text={text}>
+                  <Styled.Text>{text}</Styled.Text>
+              </Tooltip>
+          )
+      },
+    },
+    {
+      accessorKey: "lastName",
+      size: 30,
+      header: () => (
+          <div onClick={() => update("lastName")} style={{ cursor: "pointer" }}>
+            Last Name
+            {field === "lastName" &&
+                (order === "asc" ? "🔼" : order === "desc" ? "🔽" : "")}
+          </div>
+      ),
+      cell: (info) => {
+          const text = info.getValue() as string;
+
+          return (
+              <Tooltip text={text}>
+                  <Styled.Text>{text}</Styled.Text>
+              </Tooltip>
+          )
       },
     },
     {
       accessorKey: "age",
-      size: 10,
+      size: 5,
       header: () => (
         <div onClick={() => update("age")} style={{ cursor: "pointer" }}>
-          Age{" "}
+          Age
           {field === "age" &&
             (order === "asc" ? "🔼" : order === "desc" ? "🔽" : "")}
         </div>
@@ -73,13 +87,21 @@ const UsersList = () => {
     },
     {
       accessorKey: "email",
-      size: 40,
+      size: 30,
       header: "Email",
-      cell: (info) => info.getValue(),
+      cell: (info) => {
+        const text = info.getValue() as string;
+
+        return (
+            <Tooltip text={text}>
+              <Styled.Text>{text}</Styled.Text>
+            </Tooltip>
+        )
+      },
     },
     {
       accessorKey: "id",
-      size: 10,
+      size: 5,
       header: "",
       cell: (info) => {
         const id = info.getValue() || "1";

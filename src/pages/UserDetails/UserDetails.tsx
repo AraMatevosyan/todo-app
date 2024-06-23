@@ -42,7 +42,7 @@ const UserDetails = () => {
       <Button styleType="secondary" onClick={handleBackClick}>
         Back
       </Button>
-      <h1>{user.name}</h1>
+      <h1>{user.firstName} {user.lastName}</h1>
       <p>Email: {user.email}</p>
       <p>Age: {user.age}</p>
     </Styled.UserDetailsWrapper>

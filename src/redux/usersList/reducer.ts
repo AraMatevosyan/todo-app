@@ -29,7 +29,7 @@ const usersSlice = createSlice({
         (state, action: PayloadAction<FetchUsersPayload>) => {
           state.loading = false;
           state.users = action.payload.users;
-          state.totalPages = action.payload.totalPages;
+          state.totalPages = Math.round(action.payload.total / 10);
         },
       )
       .addCase(fetchUsers.rejected, (state, action) => {

@@ -11,4 +11,10 @@ const Link = styled(NavLink)`
   width: 100%;
   text-align: center;
 `;
-export const Styled = { UsersListWrapper, Link };
+
+const Text = styled.div`
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+`;
+export const Styled = { UsersListWrapper, Link, Text };

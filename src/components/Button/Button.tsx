@@ -2,10 +2,12 @@ import React, { PropsWithChildren } from "react";
 import { useTheme } from "../../theme/ThemeContext";
 import { Styled } from "./Button.styled";
 
+type ButtonStyleType = "primary" | "secondary";
+
 type ButtonProps = {
   disabled?: boolean;
   onClick?: () => void;
-  styleType?: "primary" | "secondary";
+  styleType?: ButtonStyleType;
 } & PropsWithChildren;
 
 export const Button: React.FC<ButtonProps> = ({
@@ -20,7 +22,7 @@ export const Button: React.FC<ButtonProps> = ({
     <Styled.Button
       onClick={onClick}
       disabled={disabled}
-      styleType={styleType}
+      styleType={styleType as ButtonStyleType}
       theme={currentTheme}
     >
       {children}

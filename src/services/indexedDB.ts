@@ -5,7 +5,7 @@ const DATABASE_NAME = "usersDB";
 const DATABASE_VERSION = 1;
 const STORE_NAME = "users";
 
-const users: User[] = [
+const users: Partial<User & {name: string}>[] = [
   { id: 1, name: "John Doe", email: "john@example.com", age: 30 },
   { id: 2, name: "Jane Smith", email: "jane@example.com", age: 25 },
   { id: 3, name: "Michael Johnson", email: "michael@example.com", age: 35 },
@@ -86,7 +86,7 @@ export const addUsersToDB = async () => {
   const store = transaction.objectStore(STORE_NAME);
 
   for (const user of users) {
-    const existingUser = await store.get(user.id);
+    const existingUser = await store.get(user.id!);
     if (!existingUser) {
       await store.add(user);
     }

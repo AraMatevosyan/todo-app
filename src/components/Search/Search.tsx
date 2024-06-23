@@ -1,8 +1,9 @@
-import React, { Dispatch, PropsWithChildren, SetStateAction } from "react";
+import React, { PropsWithChildren } from "react";
 import { Styled } from "./Search.styled";
+import {State} from "../../types";
 
 type SearchProps = {
-  searchState: [string, Dispatch<SetStateAction<string>>];
+  searchState: State<string>;
 } & PropsWithChildren;
 
 export const Search: React.FC<SearchProps> = ({ searchState }) => {
